@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,21 +9,24 @@ public class TxtPusher : MonoBehaviour {
     public GameObject textHolder, bgHolder;
     public Texture2D imageHolder;
     public Text debugText;
+    private string playerName;
 
     [HideInInspector] List<string> trimList;
 
 	void Start () {
-        File.WriteAllText("C:/Users/Admin/Desktop/helloworld.txt", textHolder.GetComponent<Text>().text.ToString());
+        playerName = Environment.UserName;
+        File.WriteAllText("C:/Users/" + playerName + "/Documents/helloworld.txt", textHolder.GetComponent<Text>().text.ToString());
         SaveTextureToFile(imageHolder, "thisImage");
     }
 
     void SaveTextureToFile(Texture2D texture, string filename)
     {
         var bytes = texture.EncodeToPNG();
-        var file = File.Open("C:/Users/Admin/Desktop/" + filename + ".png", FileMode.Create);
+        var file = File.Open("C:/Users/" + playerName + "/Documents/" + filename + ".png", FileMode.Create);
         var binary = new BinaryWriter(file);
         binary.Write(bytes);
         file.Close();
+        //OpenFile("C:/Users/" + playerName + "/Documents/" + filename + ".png");
     }
 
     public void WallpaperSelect()
@@ -38,7 +42,7 @@ public class TxtPusher : MonoBehaviour {
 
     public void SetFile()
     {
-        var info = new DirectoryInfo("C:/Users/Admin/Pictures");
+        var info = new DirectoryInfo("C:/Users/" + playerName + "/Pictures");
         var fileInfo = info.GetFiles();
         if (fileInfo.Length < 2)
         {
