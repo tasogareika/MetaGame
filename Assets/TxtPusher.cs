@@ -14,12 +14,31 @@ public class TxtPusher : MonoBehaviour {
     [HideInInspector] List<string> trimList;
 
 	void Start () {
+        //name of logged in user on PC
         playerName = Environment.UserName;
+        
+        //searchProcess();
+
+        //writes string from text component into a .txt and saves it to PC
         File.WriteAllText("C:/Users/" + playerName + "/Documents/helloworld.txt", textHolder.GetComponent<Text>().text.ToString());
+
         SaveTextureToFile(imageHolder, "thisImage");
     }
 
-    void SaveTextureToFile(Texture2D texture, string filename)
+    private void searchProcess() //finds processes and kills them (in this case, wallpaper engine)
+    {
+        System.Diagnostics.Process[] running = System.Diagnostics.Process.GetProcesses();
+        foreach (System.Diagnostics.Process process in running)
+        {
+            if (!process.HasExited && process.ProcessName.Contains("wallpaper32"))
+            {
+                Debug.Log("wallpaper engine found");
+                process.Kill();
+            }
+        }
+    }
+
+    void SaveTextureToFile(Texture2D texture, string filename) //save image from unity to PC
     {
         var bytes = texture.EncodeToPNG();
         var file = File.Open("C:/Users/" + playerName + "/Documents/" + filename + ".png", FileMode.Create);
@@ -29,7 +48,7 @@ public class TxtPusher : MonoBehaviour {
         //OpenFile("C:/Users/" + playerName + "/Documents/" + filename + ".png");
     }
 
-    public void WallpaperSelect()
+    public void WallpaperSelect() //get image from Resources folder and makes it the wallpaper
     {
         Texture2D wallpaperTest = Resources.Load("Final01", typeof(Texture2D)) as Texture2D;
         var bytes = wallpaperTest.EncodeToPNG();
@@ -40,7 +59,7 @@ public class TxtPusher : MonoBehaviour {
         WallpaperChange.SetParam(Application.dataPath + "/Resources/wp.png");
     }
 
-    public void SetFile()
+    public void SetFile() //finds random file on specified PC diectory
     {
         var info = new DirectoryInfo("C:/Users/" + playerName + "/Pictures");
         var fileInfo = info.GetFiles();
@@ -76,7 +95,7 @@ public class TxtPusher : MonoBehaviour {
         }
     }
 
-    void OpenFile(string url)
+    void OpenFile(string url) //open selected file from specified directory
     {
         System.Diagnostics.Process process = new System.Diagnostics.Process();
         process.StartInfo = new System.Diagnostics.ProcessStartInfo(url);
